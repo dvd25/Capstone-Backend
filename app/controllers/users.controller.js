@@ -1,5 +1,6 @@
 const User = require("../models/users.model.js");
 const sql = require("../models/db.js")
+const bcrypt = require('bcrypt')
 
 // Create and Save a new user
 exports.create = async (req, res) => {
@@ -9,26 +10,31 @@ exports.create = async (req, res) => {
             message: "Content can not be empty!"
         });
     }
-    try {
 
+
+
+    try {
+        //bcrypt password hashing
+        const hash = await bcrypt.hash(req.body.password, 5)
+        
         // Create a new product 
         const user = new User({
             role: req.body.role ? req.body.role : "customer",
             membership: req.body.membership ? req.body.membership : "free",
             email: req.body.email,
-            password: req.body.password,
+            password: hash,
             firstName: req.body.firstName,
             lastName: req.body.lastName
         });
 
         // Save product in the database  
-        User.create(user, (err, data) => {
+        await User.create(user, (err, data) => {
             if (err)
                 res.status(500).send({
                     message:
                         err.message || "Some error occurred during creation."
                 });
-            else res.send(data);
+            else res.status(200).send(data);
         });
 
     } catch (error) { res.status(500).send("Error") }
@@ -137,32 +143,32 @@ exports.deleteAll = (req, res) => {
 
 exports.login = (req, res) => {
     //gets all users by a condition
-    // https://codeshack.io/basic-login-system-nodejs-express-mysql/
     let email = req.body.email;
 	let password = req.body.password;
 	// Ensure the input fields exists and are not empty
 	if (email && password) {
 		// Execute SQL query that'll select the account from the database based on the specified username and password
-		sql.query('SELECT * FROM users WHERE email = ?', [email], function(error, results, fields) {
+		sql.query('SELECT * FROM users WHERE email = ?', [email], async function(error, results, fields) {
 			// If there is an issue with the query, output the error
 			if (error) throw error;
 			// If the account exists
 			if (results.length > 0) {
 				// If successful and found account send an Object with response
-                if (password === results[0].password) {
-                    res.send({message: 'Successfully signed in', signedIn: 'true'});
+                const validPassword = await bcrypt.compare(password, results[0].password);
+                if (validPassword === true) {
+                    res.status(200).send({message: 'Successfully signed in', signedIn: 'true'});
                     res.end();
                 } else {
-                    res.send({message: 'Incorrect Password', signedIn: 'false'})
+                    res.status(401).send({message: 'Incorrect Password', signedIn: 'false'})
                 }
 				
 			} else {
-				res.send({message: 'Incorrect Username and/or Password!'});
+				res.status(401).send({message: 'Incorrect Username and/or Password!'});
 			}			
 			res.end();
 		});
 	} else {
-		res.send({message: 'Please enter Email and Password!'});
+		res.status(401).send({message: 'Please enter Email and Password!'});
 		res.end();
 	}
 };
