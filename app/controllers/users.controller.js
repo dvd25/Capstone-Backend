@@ -1,6 +1,7 @@
 const User = require("../models/users.model.js");
 const sql = require("../models/db.js")
 const bcrypt = require('bcrypt')
+const session = require('express-session')
 
 // Create and Save a new user
 exports.create = async (req, res) => {
@@ -15,7 +16,9 @@ exports.create = async (req, res) => {
 
     try {
         //bcrypt password hashing
-        const hash = await bcrypt.hash(req.body.password, 5)
+        //generate and use salt for extra security
+        const salt = await bcrypt.genSalt()
+        const hash = await bcrypt.hash(req.body.password, salt)
         
         // Create a new product 
         const user = new User({
@@ -28,7 +31,7 @@ exports.create = async (req, res) => {
         });
 
         // Save product in the database  
-        await User.create(user, (err, data) => {
+        User.create(user, (err, data) => {
             if (err)
                 res.status(500).send({
                     message:
@@ -155,15 +158,22 @@ exports.login = (req, res) => {
 			if (results.length > 0) {
 				// If successful and found account send an Object with response
                 const validPassword = await bcrypt.compare(password, results[0].password);
+                //if the hash password comparison returns true
                 if (validPassword === true) {
-                    res.status(200).send({message: 'Successfully signed in', signedIn: 'true'});
+                    //express session middleware that sends current user info when logged in
+                    //makes maintaing user states easier
+                    //will pass the userInfo data to the front end to use
+                    const userInfo = Object.assign({}, {...results[0]})
+                    //req.session.user = userInfo;
+                    //send console message, a signedIn value for state, and the current sessions userInfo
+                    res.status(200).send({message: 'Successfully signed in', signedIn: 'true', userInfo});
                     res.end();
                 } else {
                     res.status(401).send({message: 'Incorrect Password', signedIn: 'false'})
                 }
 				
 			} else {
-				res.status(401).send({message: 'Incorrect Username and/or Password!'});
+				res.status(404).send({message: 'Email not found'});
 			}			
 			res.end();
 		});

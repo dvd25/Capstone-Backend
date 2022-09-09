@@ -14,7 +14,7 @@ app.use(cors(corsOptions));
 app.use(session({
 	secret: 'secret', //for learning purposes
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: false,
 }));
 
 app.use(express.json()); /* bodyParser.json() is deprecated */
