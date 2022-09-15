@@ -9,17 +9,16 @@ exports.create = (req, res) => {
         });
     }
     // Create a new product 
-    const product = new Tasks({
-        title: req.body.title,
-        price: req.body.price,
-        description: req.body.description,
-        image: req.body.image,
+    const task = new Tasks({
         category: req.body.category,
-        rate: req.body.rate,
-        count: req.body.count
+        description: req.body.description,
+        comments: req.body.comments,
+        status: req.body.status,
+        assignedTo: req.body.assignedTo,
+        priority: req.body.priority // 1 - 5, 5 being the highest
     });
     // Save product in the database  
-    Tasks.create(product, (err, data) => {
+    Tasks.create(task, (err, data) => {
         if (err)
             res.status(500).send({
                 message:
@@ -35,9 +34,9 @@ exports.findAll = (req, res) => {
         if (err)
             res.status(500).send({
                 message:
-                    err.message || "There are no entries in the Products Table."
+                    err.message || "There are no entries in the Tasks Table."
             });
-        else res.send(data);
+        else res.status(200).send(data);
     });
 };
 
@@ -47,12 +46,12 @@ exports.findOne = (req, res) => {
         if (err) {
             if (err.kind === "not_found") {
             res.status(404).send({
-                message: `Couldn't find product with id ${req.params.id}.`
+                message: `Couldn't find task with id ${req.params.id}.`
             })} else
             res.status(500).send({
                 message:
                     err.message || "Some error occurred while retrieval"
-            })} else res.send(data);
+            })} else res.status(200).send(data);
     });
 }
 
@@ -73,7 +72,7 @@ exports.update = (req, res) => {
             if (err) {
                 if (err.kind === "not_found") {
                     res.status(404).send({
-                        message: `Couldn't find user with id ${req.params.id}.`
+                        message: `Couldn't find task with id ${req.params.id}.`
                     });
                 } else {
                     res.status(500).send({
@@ -93,14 +92,14 @@ exports.delete = (req, res) => {
             if (err) {
                 if (err.kind === "not_found") {
                     res.status(404).send({
-                        message: `Could not find user with id ${req.params.id}.`
+                        message: `Could not find task with id ${req.params.id}.`
                     });
                 } else {
                     res.status(500).send({
-                        message: "Could not find user with id " + req.params.id
+                        message: "Could not find task with id " + req.params.id
                     });
                 }
-            } else res.send({ message: "successfully deleted" });
+            } else res.status(200).send({ message: "successfully deleted" });
         }
     );
 };
@@ -124,18 +123,4 @@ exports.deleteAll = (req, res) => {
     );
 };
 
-exports.findByCategory = (req, res) => {
-    //gets all products by a condition
-
-    Tasks.getByCategory(req.params.category,
-        (err, data) => {
-            if (err)
-            res.status(500).send({
-                message:
-                    err.message || `There is no ${req.params.category} category.`
-            });
-        else res.send(data);
-        }
-    );
-};
 

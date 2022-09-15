@@ -130,7 +130,7 @@ exports.create = async (req, res) => {
                             message: "Could not find user with id " + req.params.id
                         });
                     }
-                } else res.send({ message: "successfully deleted" });
+                } else res.status(200).send({ message: "successfully deleted" });
             }
         );
     };
