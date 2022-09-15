@@ -58,10 +58,10 @@ User.getAll = (result) => {
 
 
 
-User.updateById = (id, user, result) => {
+User.updateById = (id, user, hash, result) => {
     sql.query(
         "UPDATE users SET role = ?, membership = ?, email = ?, password = ?, firstName = ?, lastName = ? WHERE id = ?",
-        [user.role, user.membership, user.email, user.password, user.firstName, user.lastName, id],
+        [user.role, user.membership, user.email, hash, user.firstName, user.lastName, id],
         (err, res) => {
             if (err) {
                 console.log("error: ", err);
