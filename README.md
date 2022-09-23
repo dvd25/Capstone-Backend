@@ -1,6 +1,6 @@
 # Fitness Club Management System
 
-## Frontend app created for my Capstone Project using Reactjs, Javascript, Nodejs and Expressjs. Should be installed and connected with my Capstone Backend for full functionalities.
+## Backend app created for my Capstone Project using Nodejs and Expressjs. Frontend application set up to consume the API's this backend offers.
 
 
  A backend application that has API and microservices that a small fitness gym or similar businesses can utilise. 
@@ -22,3 +22,4 @@
     - Clone the front end project to your local here: https://github.com/dvd25/capstone-app-frontend
     - In the project directory, run 
      npm start
+
