@@ -14,7 +14,7 @@ app.use(cors(corsOptions));
 app.use(session({
 	secret: 'secret', //for learning purposes
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: false,
 }));
 
 app.use(express.json()); /* bodyParser.json() is deprecated */
@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 
 // require("./app/routes/products.route")(app);
 require("./app/routes/users.route")(app);
+require("./app/routes/tasks.route")(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
