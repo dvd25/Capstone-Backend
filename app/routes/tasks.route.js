@@ -6,7 +6,6 @@ module.exports = app => {
     // Create a new tasks
     router.post("/", tasks.create);
 
-
     // Retrieve all tasks
     router.get("/", tasks.findAll);
 
