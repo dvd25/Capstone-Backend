@@ -6,17 +6,16 @@
  A backend application that has API and microservices that a small fitness gym or similar businesses can utilise. 
  
  ### Some feature are:  
-                    
+    
+
+    - User & Tasks (CRUD operations)                 
     - User authentication            
     - Basic authentication (bcrypt for salt and hash)
-    - Customer/Employee management
-    - Tasks management system 
-    - Contact form that sends emails to the business.
-    - Simple and aesthethic UI for easy learning.
+    - Ready for frontend to consume it's api services
 
 ## How to run
 
-    - Clone this back end project to your local.
+    - Clone this backend project to your local.
     - In the project directory, run 
      npm start
     
