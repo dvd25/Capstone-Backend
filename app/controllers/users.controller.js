@@ -1,6 +1,6 @@
 const User = require("../models/users.model.js");
 const sql = require("../models/db.js")
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const session = require('express-session')
 
 // Create and Save a new user
