@@ -11,6 +11,9 @@ module.exports = app => {
 
     // Retrieve a single task with id
     router.get("/:id", tasks.findOne);
+
+    // Retrieve tasks assigned to Id
+    router.get("/admin/:id", tasks.findAllForAdmin);
   
     // Update a task with id
     router.put("/:id", tasks.update);

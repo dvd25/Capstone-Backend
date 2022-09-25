@@ -1,4 +1,4 @@
-const Tasks = require("../models/tasks.model.js");
+const Messages = require("../models/messages.model.js");
 
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
@@ -9,45 +9,32 @@ exports.create = (req, res) => {
         });
     }
     // Create a new product 
-    const task = new Tasks({
-        category: req.body.category,
+    const message = new Messages({
+        userId: req.body.userId,
         description: req.body.description,
-        comments: req.body.comments,
-        status: req.body.status,
-        assignedTo: req.body.assignedTo,
-        priority: req.body.priority // 1 - 5, 5 being the highest
+        email: req.body.email,
+        name: req.body.name,
+        number: req.body.number,
+        status: "unreviewed"
     });
     // Save product in the database  
-    Tasks.create(task, (err, data) => {
+    Messages.create(message, (err, data) => {
         if (err)
             res.status(500).send({
                 message:
                     err.message || "Some error occurred during creation."
             });
-        else res.send(data);
-    });
-};
-
-// Retrieve all products from database.
-exports.findAll = (req, res) => {
-    Tasks.getAll((err, data) => {
-        if (err)
-            res.status(500).send({
-                message:
-                    err.message || "There are no entries in the Tasks Table."
-            });
         else res.status(200).send(data);
     });
 };
 
-// Retrieve all products from database.
-exports.findAllForAdmin = (req, res) => {
-    const id = Number(req.params.id); 
-    Tasks.findAllByAdminId(id, (err, data) => {
+// Retrieve all messages from database.
+exports.findAll = (req, res) => {
+    Messages.getAll((err, data) => {
         if (err)
             res.status(500).send({
                 message:
-                    err.message || "There are no entries in the Tasks Table."
+                    err.message || "There are no entries in the messages Table."
             });
         else res.status(200).send(data);
     });
@@ -55,11 +42,11 @@ exports.findAllForAdmin = (req, res) => {
 
 exports.findOne = (req, res) => {
     const id = Number(req.params.id); 
-    Tasks.findById(id, (err, data) => {
+    Messages.findById(id, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
             res.status(404).send({
-                message: `Couldn't find task with id ${req.params.id}.`
+                message: `Couldn't find message with id ${req.params.id}.`
             })} else
             res.status(500).send({
                 message:
@@ -78,18 +65,47 @@ exports.update = (req, res) => {
 
     console.log(req.body);
 
-    Tasks.updateById(
+    Messages.updateById(
         req.params.id,
-        new Tasks(req.body),
+        new Messages(req.body),
         (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
                     res.status(404).send({
-                        message: `Couldn't find task with id ${req.params.id}.`
+                        message: `Couldn't find message with id ${req.params.id}.`
                     });
                 } else {
                     res.status(500).send({
-                        message: "Error updating user with id " + req.params.id
+                        message: "Error updating message with id " + req.params.id
+                    });
+                }
+            } else res.send(data);
+        }
+    );
+};
+
+exports.updateStatusOnly = (req, res) => {
+    // Validate Request
+    if (!req.body) {
+        res.status(400).send({
+            message: "Content can not be empty!"
+        });
+    }
+
+    console.log(req.body);
+
+    Messages.updateByIdStatusOnly(
+        req.params.id,
+        new Messages(req.body),
+        (err, data) => {
+            if (err) {
+                if (err.kind === "not_found") {
+                    res.status(404).send({
+                        message: `Couldn't find message with id ${req.params.id}.`
+                    });
+                } else {
+                    res.status(500).send({
+                        message: "Error updating message with id " + req.params.id
                     });
                 }
             } else res.send(data);
@@ -100,16 +116,16 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     //deletes one by one
 
-    Tasks.deleteById(req.params.id,
+    Messages.deleteById(req.params.id,
         (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
                     res.status(404).send({
-                        message: `Could not find task with id ${req.params.id}.`
+                        message: `Could not find message with id ${req.params.id}.`
                     });
                 } else {
                     res.status(500).send({
-                        message: "Could not find task with id " + req.params.id
+                        message: "Could not find message with id " + req.params.id
                     });
                 }
             } else res.status(200).send({ message: "successfully deleted" });
@@ -119,7 +135,7 @@ exports.delete = (req, res) => {
 
 exports.deleteAll = (req, res) => {
     //truncate tables it also reinitializes the auto increment primary key back to one
-    Tasks.truncateProducts(
+    Messages.truncateProducts(
         (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
@@ -131,7 +147,7 @@ exports.deleteAll = (req, res) => {
                         message: "Error deleting all"
                     });
                 }
-            } else res.send({ message: "successfully deleted all products" });
+            } else res.send({ message: "successfully deleted all message" });
         }
     );
 };

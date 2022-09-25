@@ -56,6 +56,23 @@ User.getAll = (result) => {
     });
 };
 
+User.getOnlyCustomers = (result) => {
+    sql.query(`SELECT * FROM users WHERE role = ?`, 'customer', (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.length) {
+            console.log(`Found ${res.length} users`);
+            result(err, res);
+            return;
+        }
+        result({ kind: "not_found" }, null);
+    });
+};
+
+
 
 
 User.updateById = (id, user, hash, result) => {
@@ -81,6 +98,28 @@ User.updateById = (id, user, hash, result) => {
     );
 };
 
+User.updateByIdWithoutPassword = (id, user, hash, result) => {
+    sql.query(
+        "UPDATE users SET role = ?, membership = ?, email = ?, firstName = ?, lastName = ? WHERE id = ?",
+        [user.role, user.membership, user.email, user.firstName, user.lastName, id],
+        (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(null, err);
+                return;
+            }
+
+            if (res.affectedRows == 0) {
+                // If no rows affected then there was nothing found
+                result({ kind: "not_found" }, null);
+                return;
+            }
+
+            console.log("updated user: ", { id: id, ...user });
+            result(null, { id: id, ...user });
+        }
+    );
+};
 User.deleteById = (id, result) => {
     sql.query(`DELETE FROM users WHERE id = ${id}`, (err, res) => {
         if (err) {

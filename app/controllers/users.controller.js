@@ -65,6 +65,17 @@ exports.create = async (req, res) => {
         });
     };
 
+    exports.findOnlyCustomers = (req, res) => {
+        User.getOnlyCustomers((err, data) => {
+            if (err)
+                res.status(500).send({
+                    message:
+                        err.message || "There are no entries in the Users Table."
+                });
+            else res.status(200).send(data);
+        });
+    };
+
     exports.findOne = (req, res) => {
         const id = Number(req.params.id);
         User.findById(id, (err, data) => {
@@ -82,6 +93,7 @@ exports.create = async (req, res) => {
         });
     }
 
+
     exports.update = async (req, res) => {
         // Validate Request
         if (!req.body) {
@@ -96,6 +108,39 @@ exports.create = async (req, res) => {
         const hash = await bcrypt.hash(req.body.password, salt)
 
         User.updateById(
+            req.params.id,
+            new User(req.body),
+            hash,
+            (err, data) => {
+                if (err) {
+                    if (err.kind === "not_found") {
+                        res.status(404).send({
+                            message: `Couldn't find user with id ${req.params.id}.`
+                        });
+                    } else {
+                        res.status(500).send({
+                            message: "Error updating user with id " + req.params.id
+                        });
+                    }
+                } else res.status(200).send(data);
+            }
+        );
+    };
+
+    exports.updateWithoutPassword = async (req, res) => {
+        // Validate Request
+        if (!req.body) {
+            res.status(400).send({
+                message: "Content can not be empty!"
+            });
+        }
+
+        console.log(req.body);
+
+        const salt = "salt"
+        const hash = "null"
+
+        User.updateByIdWithoutPassword(
             req.params.id,
             new User(req.body),
             hash,

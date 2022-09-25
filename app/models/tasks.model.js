@@ -39,6 +39,23 @@ Task.findById = (id, result) => {
     });
 };
 
+Task.findAllByAdminId = (id, result) => {
+    sql.query(`SELECT * FROM tasks WHERE assignedTo = ?`,id, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.length) {
+            console.log("Found tasks: ", res);
+            result(null, res);
+            return;
+        }
+        // Could not find the product with supplied id
+        result({ kind: "not_found" }, null);
+    });
+};
+
 Task.getAll = (result) => {
     sql.query(`SELECT * FROM tasks`, (err, res) => {
         if (err) {
@@ -54,6 +71,8 @@ Task.getAll = (result) => {
         result({ kind: "not_found" }, null);
     });
 };
+
+
 
 Task.updateById = (id, task, result) => { //this updates every field
     sql.query(

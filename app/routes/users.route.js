@@ -13,11 +13,20 @@ module.exports = app => {
     router.get("/", users.findAll);
 
     // Retrieve a single product with id
+    router.get("/customers", users.findOnlyCustomers);
+
+    // Retrieve a single product with id
     router.get("/:id", users.findOne);
+    
+    
+
   
     // Update a product with id
     router.put("/:id", users.update);
-  
+
+    // Update a product with id
+    router.put("/members/:id", users.updateWithoutPassword);
+    
     // Delete a product with id
     router.delete("/:id", users.delete);
   
